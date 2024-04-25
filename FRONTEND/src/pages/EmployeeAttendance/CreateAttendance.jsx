@@ -17,7 +17,7 @@ const CreateAttendance = () => {
   const [employeeAttendance, setEmployeeAttendance] = useState({});
   const navigate = useNavigate();
 
-  // State to hold selected employee
+  // State to hold selected employee 
   const [selectedEmployee, setSelectedEmployee] = useState({
     Emp_ID: '',
     Name: ''
@@ -37,16 +37,6 @@ const CreateAttendance = () => {
       });
   }, []);
 
-  // Handler to update selected employee based on Emp_ID change
-  const handleEmp_IDChange = (e) => {
-    const selectedEmp_ID = e.target.value;
-    const selectedEmp = employees.find((emp) => emp.Emp_ID === selectedEmp_ID);
-    setSelectedEmployee({
-      ...selectedEmployee,
-      Emp_ID: selectedEmp_ID,
-      Name: selectedEmp.Name,
-    });
-  };
 
   // Handler to update selected employee based on employee name change
   const handleNameChange = (e) => {
@@ -63,15 +53,18 @@ const CreateAttendance = () => {
 
   // Handler to update InTime and calculate working hours
   const handleInTimeChange = (e) => {
-    setInTime(e.target.value);
-    calculateHoursWorked(e.target.value, OutTime); // Call calculateHoursWorked
+    const newInTime = e.target.value;
+    setInTime(newInTime);
+    calculateHoursWorked(newInTime, OutTime); // Call calculateHoursWorked
   };
-
+  
   // Handler to update OutTime and calculate working hours
   const handleOutTimeChange = (e) => {
-    setOutTime(e.target.value);
-    calculateHoursWorked(InTime, e.target.value); // Call calculateHoursWorked
+    const newOutTime = e.target.value;
+    setOutTime(newOutTime);
+    calculateHoursWorked(InTime, newOutTime); // Call calculateHoursWorked
   };
+  
 
   // Function to calculate working hours and overtime
   const calculateHoursWorked = (inTime, outTime) => {
@@ -170,21 +163,7 @@ const CreateAttendance = () => {
       {loading ? <Spinner /> : ''}
       <div className='flex justify-center space-x-8'>
         <div className='flex flex-col border-2 border-sky-400 rounded-xl w-[300px] p-4'>
-          <div className='my-4'>
-            <label className='text-xl mr-4 text-gray-500'>Emp_ID</label>
-            <select
-              value={selectedEmployee.Emp_ID}
-              onChange={handleEmp_IDChange}
-              className='border-2 border-gray-500 px-4 py-2 w-full'
-            >
-              <option value=''>Select Emp_ID</option>
-              {employees.map((employee) => (
-                <option key={employee._id} value={employee.Emp_ID}>
-                  {employee.Emp_ID}
-                </option>
-              ))}
-            </select>
-          </div>
+
   
           <div className='my-4'>
             <label className='text-xl mr-4 text-gray-500'>Employee Name</label>
@@ -207,6 +186,7 @@ const CreateAttendance = () => {
             <input
               type='Date'
               value={selectedDate}
+              // selecting date function calling
               onChange={(e) => setSelectedDate(e.target.value)}
               className='border-2 border-gray-500 px-4 py-2 w-full'
             />
@@ -264,11 +244,7 @@ const CreateAttendance = () => {
         </button>
       </div>
       {/* Display total worked hours for each employee */}
-      {Object.keys(employeeAttendance).map((empID) => (
-        <div key={empID}>
-          <p>{`Employee ID: ${empID}, Total Worked Hours: ${calculateTotalWorkedHours(empID)}`}</p>
-        </div>
-      ))}
+
     </div>
   );
 };

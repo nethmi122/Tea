@@ -1,28 +1,22 @@
 import React, { useState } from 'react';
-import BackButton from '../components/BackButton';
-import Spinner from '../components/Spinner';
+import Spinner from '../../components/Spinner';
 import axios from 'axios';
+import BackButton from '../../components/BackButton';
 import { useNavigate } from 'react-router-dom';
 
-const CreateEmployee = () => {
-    const [Emp_ID, setEmpID] = useState('');
-    const [Name, setName] = useState('');
-    const [Age, setAge] = useState('');
-    const [Job_Role, setJobRole] = useState('');
+const createCustomer = () => {
+    const [Cus_ID, setCusID] = useState('');
+    const [Name, setName] = useState('');n
+    const [Address, setAddress] = useState('');
     const [Contact_No, setContact_No] = useState('');
-    const [Salary, setSalary] = useState('');
+    const [Order_ID, setOrder_ID] = useState('');
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
 
     const validateName = (name) => {
-        // Validate that Name contains only strings
+        // Validate that Name contains only alphabetical characters
         return /^[a-zA-Z]+$/.test(name);
-    };
-
-    const validateAge = (age) => {
-        // Validate that Age is not negative
-        return age >= 0;
     };
 
     const validateContactNo = (contactNo) => {
@@ -30,14 +24,9 @@ const CreateEmployee = () => {
         return /^0\d{9}$/.test(contactNo);
     };
 
-    const handleSaveEmployee = async () => {
+    const handleSaveCustomer = () => {
         if (!validateName(Name)) {
             setErrorMessage('Name must contain only alphabetical characters.');
-            return;
-        }
-
-        if (!validateAge(Age)) {
-            setErrorMessage('Age cannot be a negative value.');
             return;
         }
 
@@ -47,41 +36,40 @@ const CreateEmployee = () => {
         }
 
         const data = {
-            Emp_ID,
+            Cus_ID,
             Name,
-            Age,
-            Job_Role,
+            Address,
             Contact_No,
-            Salary,
+            Order_ID,
         };
         setLoading(true);
         axios
-            .post(`http://localhost:5555/employees`, data)
+            .post(`http://localhost:5555/customer_`, data)
             .then(() => {
                 setLoading(false);
-                navigate('/employees/emphome');
+                navigate('/customer_/home');
             })
             .catch((error) => {
                 setLoading(false);
-                setErrorMessage('An error occurred while saving the employee. Please try again.');
+                setErrorMessage('An error occurred while saving the customer. Please try again.');
                 console.error('An error occurred:', error);
             });
     };
 
     return (
-        <div className='p-4' style={{ backgroundColor: '#f0f0f0' }}>
-            <BackButton destination='/employees/emphome' />
-            <h1 className='text-3xl my-4'>Create Employee</h1>
+        <div className='p-4'>  
+            <BackButton destination='/customer_/home' />
+            <h1 className='text-3xl my-4'>Create Customer</h1>
             {loading && <Spinner />}
             {errorMessage && <p className="text-red-500">{errorMessage}</p>}
 
-            <div className='flex flex-col border-2 border-gray-400 rounded-xl w-[600px] p-4 mx-auto'>
+            <div className='flex flex-col border-2 border-sky-400 rounded-xl w-[600px] p-4 mx-auto'>
                 <div className='my-4'>
-                    <label className='text-xl mr-4 text-gray-500'>Emp_ID</label>
+                    <label className='text-xl mr-4 text-gray-500'>Cus_ID</label>
                     <input 
                         type='number'
-                        value={Emp_ID}
-                        onChange={(e) => setEmpID(e.target.value)}
+                        value={Cus_ID}
+                        onChange={(e) => setCusID(e.target.value)}
                         className='border-2 border-gray-500 px-4 py-2 w-full'
                     />
                 </div>
@@ -97,29 +85,20 @@ const CreateEmployee = () => {
                 </div>
 
                 <div className='my-4'>
-                    <label className='text-xl mr-4 text-gray-500'>Age</label>
+                    <label className='text-xl mr-4 text-gray-500'>Address</label>
                     <input 
-                        type='number'
-                        value={Age}
-                        onChange={(e) => setAge(e.target.value)}
+                        type='text'
+                        value={Address}
+                        onChange={(e) => setAddress(e.target.value)}
                         className='border-2 border-gray-500 px-4 py-2 w-full'
                     />
                 </div>
 
-                <div className='my-4'>
-                    <label className='text-xl mr-4 text-gray-500'>Job Role</label>
-                    <input 
-                        type='text'
-                        value={Job_Role}
-                        onChange={(e) => setJobRole(e.target.value)}
-                        className='border-2 border-gray-500 px-4 py-2 w-full'
-                    />
-                </div>
 
                 <div className='my-4'>
                     <label className='text-xl mr-4 text-gray-500'>Contact No</label>
                     <input 
-                        type='tel'
+                        type='number'
                         value={Contact_No}
                         onChange={(e) => setContact_No(e.target.value)}
                         className='border-2 border-gray-500 px-4 py-2 w-full'
@@ -127,17 +106,17 @@ const CreateEmployee = () => {
                 </div>
 
                 <div className='my-4'>
-                    <label className='text-xl mr-4 text-gray-500'>Salary</label>
+                    <label className='text-xl mr-4 text-gray-500'>Order_ID</label>
                     <input 
                         type='number'
-                        value={Salary}
-                        onChange={(e) => setSalary(e.target.value)}
+                        value={Order_ID}
+                        onChange={(e) => setOrder_ID(e.target.value)}
                         className='border-2 border-gray-500 px-4 py-2 w-full'
                     />
                 </div>
 
-                <div className='flex justify-end'>
-                    <button className='p-2 bg-green-500 text-white rounded-md' onClick={handleSaveEmployee}>
+                <div>
+                    <button className='p-2 bg-sky-300 m-8' onClick={handleSaveCustomer}>
                         Save
                     </button>
                 </div>
@@ -146,4 +125,4 @@ const CreateEmployee = () => {
     );
 };
 
-export default CreateEmployee;
+export default createCustomer;

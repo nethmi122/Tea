@@ -14,13 +14,20 @@ import DeleteAttendance from './pages/EmployeeAttendance/DeleteAttendance';
 import CreateSalary from './pages/EmployeeSalary/CreateSalary';
 import DeleteSalary from './pages/EmployeeSalary/DeleteSalary';
 import ReportAttendance from './pages/EmployeeAttendance/ReportAttendance';
-
+import CreateCustomer from './pages/Customer/createCustomer';
+ import CustomerHome from './pages/Customer/CustomerHome';
+ import MainHome from './pages/MainHome';
+ import DeleteCustomer from './pages/Customer/DeleteCustomer';
+ import EditCustomer from './pages/Customer/EditCustomer';
+ import ReportCustomer from './pages/Customer/ReportCustomer';
+ import ReadOneCus from './pages/Customer/ReadOneCus';
 
 
 const App = () => {
   return (
     <Routes>
-      <Route path='/' element={<Home />} />
+      <Route path='/' element={<MainHome />} />
+      <Route path='/employees/emphome' element={<Home />} />
       <Route path='/employees/create' element={<CreateEmployee />} />
       <Route path='/employees/manage' element={<ManageEmployee />} />
       <Route path='/employees/salary' element={<EmpSalary />} />
@@ -37,6 +44,14 @@ const App = () => {
       <Route path='/employeesalaries/createsalary' element={<CreateSalary />} />
       <Route path='/employeesalaries/empsalary' element={<EmpSalary />} />
       <Route path='/employeesalaries/deletesalary/:id' element={<DeleteSalary />} />
+
+      <Route path='/customer_/home' element={<CustomerHome />} />
+      <Route path='/customer_/createcus' element={<CreateCustomer />} />
+      <Route path='/customer_/deletecus/:id' element={<DeleteCustomer />} />
+      <Route path='/customer_/editcus/:id' element={<EditCustomer />} />
+      <Route path='/customer_/readonecus/:id' element={<ReadOneCus />} />
+      <Route path='/customer_/reportcus' element={<ReportCustomer />} />
+
 
       
      

@@ -80,11 +80,7 @@ const filteredEmployeesAttendence = handleSearch();
                         </option>
                     ))}
                 </select>
-                <input
-                    type='month'
-                    value={searchDate}
-                    onChange={(e) => setSearchDate(e.target.value)}
-                    className='p-2 border border-gray-300 rounded'/>
+       
             </div>
         </div>
 

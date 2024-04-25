@@ -109,8 +109,6 @@ function EmpSalary() {
             <th className='border border-slate-600 rounded-md '>toDate</th>
             <th className='border border-slate-600 rounded-md '>totalOThours</th>
             <th className='border border-slate-600 rounded-md'>totalOTpay</th>
-            <th className='border border-slate-600 rounded-md'>totalWorkedhours</th>
-            <th className='border border-slate-600 rounded-md'>totalWorkedpay</th>
             <th className='border border-slate-600 rounded-md'>TotalSalary</th>
             <th className='border border-slate-600 rounded-md'>Action</th>
         </tr>
@@ -140,13 +138,7 @@ function EmpSalary() {
                     {EmployeeSalary.totalOTpay}
                 </td>
 
-                <td className='border border-slate-700 rounded-md text-center'>
-                    {EmployeeSalary.totalWorkedhours}
-                </td>
-                
-                <td className='border border-slate-700 rounded-md text-center'>
-                    {EmployeeSalary.totalWorkedpay}
-                </td>
+
 
                 <td className='border border-slate-700 rounded-md text-center'>
                     {EmployeeSalary.TotalSalary}
