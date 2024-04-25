@@ -5,26 +5,21 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const CreateEmployeeSalary = () => {
-  const [Emp_ID, setEmp_ID] = useState('');
-  const [Name, setName] = useState('');
-  const [fromDate, setfromDate] = useState('');
-  const [toDate, settoDate] = useState('');
-  const [totalOThours, settotalOThours] = useState('');
-  const [totalOTpay, settotalOTpay] = useState('');
-  const [totalWorkedhours, settotalWorkedhours] = useState('');
-  const [totalWorkedpay, settotalWorkedpay] = useState('');
-  const [TotalSalary, setTotalSalary] = useState('');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+  const [totalOThours, setTotalOThours] = useState(0);
+  const [totalOTpay, setTotalOTpay] = useState(0);
+  const [TotalSalary, setTotalSalary] = useState(0);
   const [employees, setEmployees] = useState([]);
-  const [employeeattendances, setemployeeattendances] = useState([]);
+  const [employeeAttendances, setEmployeeAttendances] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const [selectedEmployee, setSelectedEmployee] = useState({
     Emp_ID: '',
-    Name: ''
+    Name: '',
+    Salary: 0,
   });
-
-  const [includeEPF, setIncludeEPF] = useState(false); // State to track EPF selection
 
   useEffect(() => {
     setLoading(true);
@@ -40,102 +35,71 @@ const CreateEmployeeSalary = () => {
       });
   }, []);
 
-  const handleEmp_IDChange = (e) => {
-    const selectedEmp_ID = e.target.value;
-    const selectedEmp = employees.find((emp) => emp.Emp_ID === selectedEmp_ID);
-    setSelectedEmployee({
-      ...selectedEmployee,
-      Emp_ID: selectedEmp_ID,
-      Name: selectedEmp.Name,
-    });
-  };
+  useEffect(() => {
+    setLoading(true);
+    axios
+      .get('http://localhost:5555/employeeattendances')
+      .then((response) => {
+        setEmployeeAttendances(response.data.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        setLoading(false);
+      });
+  }, []);
 
   const handleNameChange = (e) => {
     const selectedName = e.target.value;
-    const selectedEmp = employees.find(
-      (emp) => emp.Name === selectedName
-    );
+    const selectedEmp = employees.find((emp) => emp.Name === selectedName);
     setSelectedEmployee({
       ...selectedEmployee,
-      Emp_ID: selectedEmp.Emp_ID,
+      Emp_ID: selectedEmp?.Emp_ID || '',
       Name: selectedName,
+      Salary: selectedEmp?.Salary || 0,
     });
   };
 
-  // calculate total OT hours
   const calculateTotalOvertimeHours = () => {
-    const filteredAttendance = employeeattendances.filter(
+    const filteredAttendance = employeeAttendances.filter(
       (attendance) =>
-        attendance.Emp_ID === selectedEmployee.Emp_ID &&
-        attendance.date >= fromDate &&
-        attendance.date <= toDate
+        attendance.Name === selectedEmployee.Name &&
+        new Date(attendance.date) >= new Date(fromDate) &&
+        new Date(attendance.date) <= new Date(toDate)
     );
-
     const totalOvertimeHours = filteredAttendance.reduce(
       (total, attendance) => total + attendance.OThours,
       0
     );
-
-    // Set the total overtime hours state
-    settotalOThours(totalOvertimeHours);
+    setTotalOThours(totalOvertimeHours);
   };
 
-  // calculate total Worked hours
-  const calculateTotalWorkedhours = () => {
-    const filteredAttendance = employeeattendances.filter(
-      (attendance) =>
-        attendance.Emp_ID === selectedEmployee.Emp_ID &&
-        attendance.date >= fromDate &&
-        attendance.date <= toDate
-    );
-
-    const totalWorkedhours = filteredAttendance.reduce(
-      (total, attendance) => total + attendance.WorkingHours,
-      0
-    );
-
-    // Set the total Worked hours state
-    settotalWorkedhours(totalWorkedhours);
+  const calculateTotalOTpay = () => {
+    const calculatedTotalOTpay = totalOThours * 500;
+    setTotalOTpay(calculatedTotalOTpay);
   };
 
-  // Calculate totalOTpay and totalWorkedpay
-  const calculatedTotalOTpay = () => {
-    const calculatedTotalOTpay = totalOThours * 585;
-    settotalOTpay(calculatedTotalOTpay);
-  };
-
-  const calculatedTotalWorkedpay = () => {
-    const calculatedTotalWorkedpay = totalWorkedhours * 390;
-    settotalWorkedpay(calculatedTotalWorkedpay);
-  };
-
-  // Calculate totalSalary including EPF if selected
-  const calculatedTotalSalary = () => {
-    let totalSalary = totalOTpay + totalWorkedpay;
-    if (includeEPF) {
-      // Include EPF,8%
-      const epfAmount = totalSalary * 0.08;
-      totalSalary -= epfAmount;
-    }
+  const calculateTotalSalary = () => {
+    const totalSalary = selectedEmployee.Salary + totalOTpay;
     setTotalSalary(totalSalary);
   };
 
   const handleSaveEmployeeSalary = () => {
+    calculateTotalSalary();
     calculateTotalOvertimeHours();
-    calculateTotalWorkedhours();
-    calculatedTotalSalary(); // Calculate total salary including EPF
+    calculateTotalOTpay();
+    
 
     const data = {
       Emp_ID: selectedEmployee.Emp_ID,
       Name: selectedEmployee.Name,
       fromDate,
       toDate,
-      totalOThours, // Include totalOThours in the data sent to the server
+      totalOThours,
       totalOTpay,
-      totalWorkedhours,
-      totalWorkedpay,
-      TotalSalary
+      TotalSalary,
     };
+
     setLoading(true);
     axios
       .post('http://localhost:5555/employeesalaries', data)
@@ -149,20 +113,6 @@ const CreateEmployeeSalary = () => {
       });
   };
 
-  useEffect(() => {
-    setLoading(true);
-    axios
-      .get('http://localhost:5555/EmployeeAttendence')
-      .then((response) => {
-        setemployeeattendances(response.data.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.log(error);
-        setLoading(false);
-      });
-  }, []);
-
   return (
     <div className='p-4'>
       <BackButton destination='/employeesalaries/empsalary' />
@@ -172,27 +122,11 @@ const CreateEmployeeSalary = () => {
         <div className='flex space-x-4'>
           <div className='flex flex-col border-2 border-sky-400 rounded-xl w-[300px] p-4'>
             <div className='my-4'>
-              <label className='text-xl mr-4 text-gray-500'>Emp_ID</label>
-              <select
-                value={selectedEmployee.Emp_ID}
-                onChange={handleEmp_IDChange}
-                className='border-2 border-gray-500 px-4 py-2 w-full'
-              >
-                <option value=''>Select Emp_ID</option>
-                {employees.map((employee) => (
-                  <option key={employee._id} value={employee.Emp_ID}>
-                    {employee.Emp_ID}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className='my-4'>
               <label className='text-xl mr-4 text-gray-500'>Employee Name</label>
               <select
                 value={selectedEmployee.Name}
                 onChange={handleNameChange}
-                className='border-2 border-gray-500 px-4 py-2  w-full '
+                className='border-2 border-gray-500 px-4 py-2 w-full'
               >
                 <option value=''>Select Employee Name</option>
                 {employees.map((employee) => (
@@ -206,112 +140,70 @@ const CreateEmployeeSalary = () => {
             <div className='my-4'>
               <label className='text-xl mr-4 text-gray-500'>fromDate</label>
               <input
-                type='Date'
+                type='date'
                 value={fromDate}
-                onChange={(e) => setfromDate(e.target.value)}
-                className='border-2 border-gray-500 px-4 py-2  w-full '
+                onChange={(e) => setFromDate(e.target.value)}
+                className='border-2 border-gray-500 px-4 py-2 w-full'
               />
             </div>
 
             <div className='my-4'>
               <label className='text-xl mr-4 text-gray-500'>toDate</label>
               <input
-                type='Date'
+                type='date'
                 value={toDate}
-                onChange={(e) => settoDate(e.target.value)}
-                className='border-2 border-gray-500 px-4 py-2  w-full '
+                onChange={(e) => setToDate(e.target.value)}
+                className='border-2 border-gray-500 px-4 py-2 w-full'
               />
             </div>
           </div>
 
           <div className='flex flex-col border-2 border-sky-400 rounded-xl w-[300px] p-4'>
             <div className='my-4'>
-              <label className='text-xl mr-4 text-gray-500'>totalOThours</label>
+              <label className='text-xl mr-4 text-gray-500'>Total OT Hours</label>
               <input
                 type='text'
-                value={totalOThours} // Display totalOThours
+                value={totalOThours}
                 readOnly
-                className='border-2 border-gray-500 px-4 py-2  w-full '
+                className='border-2 border-gray-500 px-4 py-2 w-full'
               />
-              {/* Button to calculate totalOThours */}
               <button className='p-2 bg-sky-300 m-2' onClick={calculateTotalOvertimeHours}>
                 Calculate Total OT Hours
               </button>
             </div>
-
-            <div className='my-4'>
-              <label className='text-xl mr-4 text-gray-500'>totalWorkedhours</label>
-              <input
-                type='text'
-                value={totalWorkedhours}
-                readOnly
-                className='border-2 border-gray-500 px-4 py-2  w-full '
-              />
-              {/* Button to calculate totalWorkedhours */}
-              <button className='p-2 bg-sky-300 m-2' onClick={calculateTotalWorkedhours}>
-                Calculate Total Worked hours
-              </button>
-            </div>
-
-            <div className='my-4'>
-    <label className='text-xl mr-4 text-gray-500'>EPF</label>
-    <button
-        className={`p-2 bg-sky-300 m-2 ${includeEPF ? 'bg-green-500' : 'bg-red-500'}`}
-        onClick={() => setIncludeEPF(!includeEPF)}
-    >
-        {includeEPF ? 'EPF Included' : 'EPF Excluded'}
-    </button>
-</div>
-
-            
           </div>
 
           <div className='flex flex-col border-2 border-sky-400 rounded-xl w-[300px] p-4'>
             <div className='my-4'>
-              <label className='text-xl mr-4 text-gray-500'>totalOTpay</label>
+              <label className='text-xl mr-4 text-gray-500'>Total OT Pay</label>
               <input
                 type='text'
                 value={totalOTpay}
                 readOnly
-                className='border-2 border-gray-500 px-4 py-2  w-full '
+                className='border-2 border-gray-500 px-4 py-2 w-full'
               />
-              {/* Button to calculate totalOTpay */}
-              <button className='p-2 bg-sky-300 m-2' onClick={calculatedTotalOTpay}>
+              <button className='p-2 bg-sky-300 m-2' onClick={calculateTotalOTpay}>
                 Calculate Total OT Pay
               </button>
             </div>
+          </div>
 
+          <div className='flex flex-col border-2 border-sky-400 rounded-xl w-[300px] p-4'>
             <div className='my-4'>
-              <label className='text-xl mr-4 text-gray-500'>totalWorkedpay</label>
-              <input
-                type='text'
-                value={totalWorkedpay }
-                readOnly
-                className='border-2 border-gray-500 px-4 py-2  w-full '
-              />
-              {/* Button to calculate totalWorkedpay */}
-              <button className='p-2 bg-sky-300 m-2' onClick={calculatedTotalWorkedpay}>
-                Calculate Total Worked Pay
-              </button>
-            </div>
-
-            <div className='my-4'>
-              <label className='text-xl mr-4 text-gray-500'>TotalSalary</label>
+              <label className='text-xl mr-4 text-gray-500'>Total Salary</label>
               <input
                 type='text'
                 value={TotalSalary}
                 readOnly
-                className='border-2 border-gray-500 px-4 py-2  w-full '
+                className='border-2 border-gray-500 px-4 py-2 w-full'
               />
-              {/* Button to calculate TotalSalary */}
-              <button className='p-2 bg-sky-300 m-2' onClick={calculatedTotalSalary}>
+               <button className='p-2 bg-sky-300 m-2' onClick={calculateTotalSalary}>
                 Calculate Total Salary
               </button>
             </div>
           </div>
         </div>
-     
-</div>
+      </div>
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <button
           className='p-2 bg-sky-300 m-2'

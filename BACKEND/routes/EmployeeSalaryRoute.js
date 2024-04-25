@@ -29,8 +29,6 @@ router.post('/', async (request, response) => {
       toDate: request.body.toDate,
       totalOThours: request.body.totalOThours || null,
       totalOTpay: request.body.totalOTpay || null,
-      totalWorkedhours: request.body.totalWorkedhours || null,
-      totalWorkedpay: request.body.totalWorkedpay || null,
       TotalSalary: request.body.TotalSalary || null,
     };
 
@@ -82,8 +80,6 @@ router.put('/:id', async (request, response) => {
       toDate,
       totalOThours,
       totalOTpay,
-      totalWorkedhours,
-      totalWorkedpay,
       TotalSalary
     } = request.body;
 
@@ -94,8 +90,6 @@ router.put('/:id', async (request, response) => {
       !toDate ||
       totalOThours === undefined ||
       totalOTpay === undefined ||
-      totalWorkedhours === undefined ||
-      totalWorkedpay === undefined ||
       TotalSalary === undefined
     ) {
       return response.status(400).send({
@@ -152,8 +146,6 @@ router.get("/searchEmployeeSalary", async (req, res) => {
         { toDate: { $regex: new RegExp(search, 'i') } },
         { totalOThours: { $regex: new RegExp(search, 'i') } },
         { totalOTpay: { $regex: new RegExp(search, 'i') } },
-        { totalWorkedhours: { $regex: new RegExp(search, 'i') } },
-        { totalWorkedpay: { $regex: new RegExp(search, 'i') } },
         { TotalSalary: { $regex: new RegExp(search, 'i') } },
       ],
     };
