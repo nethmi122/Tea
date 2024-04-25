@@ -1,37 +1,23 @@
-import express, { request, response } from "express";
-import { PORT, mongoDBURL } from "./config.js";
-import mongoose from "mongoose";
-import { Employee } from "./models/employeeModel.js";
-import employeeRoute from './routes/employeeRoute.js';
-import { EmployeeSalary } from "./models/EmployeeSalary.js";
-import EmployeeSalaryRoute from './routes/EmployeeSalaryRoute.js';
-import { EmployeeAttendence } from "./models/EmployeeAttendance.js";
-import EmployeeAttendanceRoute from './routes/EmployeeAttendanceRoute.js';
+import express from 'express';
+import mongoose from 'mongoose';
 import cors from 'cors';
+import { PORT, mongoDBURL } from "./config.js";
+import employeeRoute from './routes/employeeRoute.js';
+import EmployeeSalaryRoute from './routes/EmployeeSalaryRoute.js';
+import EmployeeAttendanceRoute from './routes/EmployeeAttendanceRoute.js';
+import supplierRoute from "./routes/supplierRoute.js";
 
 const app = express();
 
 app.use(express.json());
-
-
 app.use(cors());
 
-//app.use(
-//    cors({
-//        origin:'http://localhost:3000',
-//        methods: ['GET','POST', 'PUT','DELETE'],
-//        allowedHeaders: ['Content-Type'],
-//    })
-//);
+app.use('/employees', employeeRoute);
+app.use('/employeesalaries', EmployeeSalaryRoute);
+app.use('/employeeattendances', EmployeeAttendanceRoute);
+app.use('/suppliers', supplierRoute);
 
-
-
-app.use('/employees',employeeRoute);
-app.use('/employeesalaries',EmployeeSalaryRoute);
-app.use('/employeeattendances',EmployeeAttendanceRoute);
-
-mongoose
-    .connect(mongoDBURL)
+mongoose.connect(mongoDBURL)
     .then(() => {
         console.log('App connected to database');
         app.listen(PORT, () => {

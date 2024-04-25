@@ -14,6 +14,19 @@ import DeleteAttendance from './pages/EmployeeAttendance/DeleteAttendance';
 import CreateSalary from './pages/EmployeeSalary/CreateSalary';
 import DeleteSalary from './pages/EmployeeSalary/DeleteSalary';
 import ReportAttendance from './pages/EmployeeAttendance/ReportAttendance';
+import CreateSupplier from './pages/CreateSupplier';
+import DeteleSupplier from './pages/DeleteSupplier';
+import EditSupplier from './pages/EditSupplier';
+import ShowSupplier from './pages/ShowSupplier';
+import ManageSupplier from './pages//ManageSupplier';
+import SupplierReport from './pages/SupplierReport';
+import SupplierHome from './pages/SupplierHome';
+
+
+
+
+
+
 
 
 
@@ -37,6 +50,21 @@ const App = () => {
       <Route path='/employeesalaries/createsalary' element={<CreateSalary />} />
       <Route path='/employeesalaries/empsalary' element={<EmpSalary />} />
       <Route path='/employeesalaries/deletesalary/:id' element={<DeleteSalary />} />
+
+      <Route path='/suppliers/suphome' element={<SupplierHome/>}/>
+      <Route path='/suppliers/create' element={<CreateSupplier />} />
+      <Route path='/suppliers/manage' element={<ManageSupplier />} />
+      <Route path='/suppliers/details/:id' element={<ShowSupplier />} />
+      <Route path='/suppliers/edit/:id' element={<EditSupplier />} />
+      <Route path='/suppliers/delete/:id' element={<DeteleSupplier />} />
+      <Route path='/suppliers/reportSupplier' element={<SupplierReport />} />
+
+
+
+
+
+
+
 
       
      
